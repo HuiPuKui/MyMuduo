@@ -30,17 +30,17 @@ void EventLoopThreadPool::start(const ThreadInitCallback &cb)
         snprintf(buf, sizeof buf, "%s%d", name_.c_str(), i);
         EventLoopThread *t = new EventLoopThread(cb, buf);
         threads_.push_back(std::unique_ptr<EventLoopThread>(t));
-        loops_.push_back(t->startLoop()); // åº•å±‚åˆ›å»ºçº¿ç¨‹ï¼Œç»‘å®šä¸€ä¸ªæ–°çš„ EventLoopï¼Œå¹¶è¿”å› loop çš„åœ°å€
+        loops_.push_back(t->startLoop()); // µ×²ã´´½¨Ïß³Ì£¬°ó¶¨Ò»¸öĞÂµÄ EventLoop£¬²¢·µ»Ø loop µÄµØÖ·
     }
 
-    // æ•´ä¸ªæœåŠ¡ç«¯åªæœ‰ä¸€ä¸ªçº¿ç¨‹ï¼Œè¿è¡Œç€ baseloop
+    // Õû¸ö·şÎñ¶ËÖ»ÓĞÒ»¸öÏß³Ì£¬ÔËĞĞ×Å baseloop
     if (numThreads_ == 0)
     {
         cb(baseLoop_);
     }
 }
 
-// å¦‚æœå·¥ä½œåœ¨å¤šçº¿ç¨‹ä¸­ï¼Œbaseloop_ é»˜è®¤ä»¥è½®è¯¢çš„æ–¹å¼åˆ†é… channel ç»™ subloop
+// Èç¹û¹¤×÷ÔÚ¶àÏß³ÌÖĞ£¬baseloop_ Ä¬ÈÏÒÔÂÖÑ¯µÄ·½Ê½·ÖÅä channel ¸ø subloop
 EventLoop *EventLoopThreadPool::getNextLoop()
 {
     EventLoop *loop = baseLoop_;

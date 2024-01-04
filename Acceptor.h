@@ -23,7 +23,7 @@ public:
 private:
     void handleRead();
 
-    EventLoop *loop_; // Acceptor ç”¨çš„å°±æ˜¯ç”¨æˆ·å®šä¹‰çš„é‚£ä¸ª baseLoopï¼Œä¹Ÿç§°ä½œ mainLoop
+    EventLoop *loop_; // Acceptor ÓÃµÄ¾ÍÊÇÓÃ»§¶¨ÒåµÄÄÇ¸ö baseLoop£¬Ò²³Æ×÷ mainLoop
     Socket acceptSocket_;
     Channel acceptChannel_;
     NewConnectionCallback newConnectionCallback_;

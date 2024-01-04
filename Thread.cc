@@ -19,25 +19,25 @@ Thread::~Thread()
 {
     if (started_ && !joined_)
     {
-        thread_->detach(); // thread ç±»æä¾›çš„è®¾ç½®åˆ†ç¦»çº¿ç¨‹çš„æ–¹æ³•
+        thread_->detach(); // thread ÀàÌá¹©µÄÉèÖÃ·ÖÀëÏß³ÌµÄ·½·¨
     }
 }
 
-void Thread::start() // ä¸€ä¸ª Thread å¯¹è±¡ï¼Œè®°å½•çš„å°±æ˜¯ä¸€ä¸ªæ–°çº¿ç¨‹çš„è¯¦ç»†ä¿¡æ¯
+void Thread::start() // Ò»¸ö Thread ¶ÔÏó£¬¼ÇÂ¼µÄ¾ÍÊÇÒ»¸öĞÂÏß³ÌµÄÏêÏ¸ĞÅÏ¢
 {
     started_ = true;
     sem_t sem;
     sem_init(&sem, false, 0);
-    // å¼€å¯çº¿ç¨‹
+    // ¿ªÆôÏß³Ì
     thread_ = std::shared_ptr<std::thread>(new std::thread([&](){
-        // è·å–çº¿ç¨‹çš„ tid å€¼
+        // »ñÈ¡Ïß³ÌµÄ tid Öµ
         tid_ = CurrentThread::tid();
         sem_post(&sem);
-        // å¼€å¯ä¸€ä¸ªæ–°çº¿ç¨‹ï¼Œä¸“é—¨æ‰§è¡Œçº¿ç¨‹å‡½æ•°
+        // ¿ªÆôÒ»¸öĞÂÏß³Ì£¬×¨ÃÅÖ´ĞĞÏß³Ìº¯Êı
         func_(); 
     }));
 
-    // è¿™é‡Œå¿…é¡»ç­‰å¾…è·å–ä¸Šé¢æ–°åˆ›å»ºçš„çº¿ç¨‹çš„ tid å€¼
+    // ÕâÀï±ØĞëµÈ´ı»ñÈ¡ÉÏÃæĞÂ´´½¨µÄÏß³ÌµÄ tid Öµ
     sem_wait(&sem);
 }
 

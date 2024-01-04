@@ -24,7 +24,7 @@ EventLoopThread::~EventLoopThread()
 
 EventLoop *EventLoopThread::startLoop()
 {
-    thread_.start(); // å¯åŠ¨åº•å±‚çš„æ–°çº¿ç¨‹
+    thread_.start(); // Æô¶¯µ×²ãµÄÐÂÏß³Ì
 
     EventLoop *loop = nullptr;
     {
@@ -38,10 +38,10 @@ EventLoop *EventLoopThread::startLoop()
     return loop;
 }
 
-// ä¸‹é¢è¿™ä¸ªæ–¹æ³•ï¼Œæ˜¯åœ¨å•ç‹¬çš„æ–°çº¿ç¨‹é‡Œé¢è¿è¡Œçš„
+// ÏÂÃæÕâ¸ö·½·¨£¬ÊÇÔÚµ¥¶ÀµÄÐÂÏß³ÌÀïÃæÔËÐÐµÄ
 void EventLoopThread::threadFunc()
 {
-    EventLoop loop; // åˆ›å»ºä¸€ä¸ªç‹¬ç«‹çš„ eventloopï¼Œå’Œä¸Šé¢çš„çº¿ç¨‹æ˜¯ä¸€ä¸€å¯¹åº”çš„ï¼Œone loop per thread
+    EventLoop loop; // ´´½¨Ò»¸ö¶ÀÁ¢µÄ eventloop£¬ºÍÉÏÃæµÄÏß³ÌÊÇÒ»Ò»¶ÔÓ¦µÄ£¬one loop per thread
 
     if (callback_)
     {

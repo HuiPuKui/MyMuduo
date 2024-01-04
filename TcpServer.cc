@@ -3,7 +3,7 @@
 
 #include <functional>
 
-EventLoop *CheckLoopNotNull(EventLoop *loop)
+static EventLoop *CheckLoopNotNull(EventLoop *loop)
 {
     if (loop == nullptr)
     {
@@ -22,7 +22,7 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::
   , messageCallback_()
   , nextConnId_(1)
 {
-    // å½“æœ‰æ–°ç”¨æˆ·è¿žæŽ¥æ—¶ï¼Œä¼šæ‰§è¡Œ TcpServer::newConnection å›žè°ƒ
+    // µ±ÓÐÐÂÓÃ»§Á¬½ÓÊ±£¬»áÖ´ÐÐ TcpServer::newConnection »Øµ÷
     acceptor_->setNewConnectionCallback(std::bind(&TcpServer::newConnection, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -51,18 +51,18 @@ void TcpServer::setWriteCompleteCallback(const WriteCompleteCallback &cb)
     writeCompleteCallback_ = cb;
 }
 
-// è®¾ç½®åº•å±‚ subLoop çš„ä¸ªæ•°
+// ÉèÖÃµ×²ã subLoop µÄ¸öÊý
 void TcpServer::setThreadNum(int numThreads)
 {
     threadPool_->setThreadNum(numThreads);
 }
 
-// å¼€å¯æœåŠ¡å™¨ç›‘å¬       loop.loop()
+// ¿ªÆô·þÎñÆ÷¼àÌý       loop.loop()
 void TcpServer::start()
 {
-    if (started_++ == 0) // é˜²æ­¢ä¸€ä¸ª TcpServer å¯¹è±¡è¢« Start å¤šæ¬¡
+    if (started_++ == 0) // ·ÀÖ¹Ò»¸ö TcpServer ¶ÔÏó±» Start ¶à´Î
     {
-        threadPool_->start(threadInitCallback_); // å¯åŠ¨åº•å±‚çš„ loop çº¿ç¨‹æ± 
+        threadPool_->start(threadInitCallback_); // Æô¶¯µ×²ãµÄ loop Ïß³Ì³Ø
         loop_->runInLoop(std::bind(&Acceptor::listen, acceptor_.get()));
     }
 }

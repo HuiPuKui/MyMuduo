@@ -22,7 +22,7 @@ public:
 
     void start(const ThreadInitCallback &cb = ThreadInitCallback());
 
-    // å¦‚æœå·¥ä½œåœ¨å¤šçº¿ç¨‹ä¸­ï¼Œbaseloop_ é»˜è®¤ä»¥è½®è¯¢çš„æ–¹å¼åˆ†é… channel ç»™ subloop
+    // Èç¹û¹¤×÷ÔÚ¶àÏß³ÌÖĞ£¬baseloop_ Ä¬ÈÏÒÔÂÖÑ¯µÄ·½Ê½·ÖÅä channel ¸ø subloop
     EventLoop *getNextLoop();
 
     std::vector<EventLoop*> getAllLoops();

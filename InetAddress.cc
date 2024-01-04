@@ -1,7 +1,6 @@
 #include "InetAddress.h"
 
 #include <string.h>
-#include <string.h>
 
 InetAddress::InetAddress(uint16_t port, std::string ip)
 {

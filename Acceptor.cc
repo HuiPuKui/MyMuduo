@@ -26,7 +26,7 @@ Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenAddr, bool reusepor
     acceptSocket_.setReuseAddr(true);
     acceptSocket_.setReusePort(true);
     acceptSocket_.bindAddress(listenAddr); // bind
-    // TcpServer::start()  Acceptor.listen æœ‰æ–°ç”¨æˆ·è¿æ¥ï¼Œè¦æ‰§è¡Œä¸€ä¸ªå›è°ƒï¼ˆconnfd => channel => subLoopï¼‰
+    // TcpServer::start()  Acceptor.listen ÓĞĞÂÓÃ»§Á¬½Ó£¬ÒªÖ´ĞĞÒ»¸ö»Øµ÷£¨connfd => channel => subLoop£©
     // baseLoop => acceptChannel_(listenfd)
     acceptChannel_.setReadCallback(std::bind(&Acceptor::handleRead, this));
 }
@@ -54,7 +54,7 @@ void Acceptor::listen()
     acceptChannel_.enableReading(); // 
 }
 
-// listenfd æœ‰äº‹ä»¶å‘ç”Ÿäº†ï¼Œå°±æ˜¯æœ‰æ–°ç”¨æˆ·è¿æ¥äº†
+// listenfd ÓĞÊÂ¼ş·¢ÉúÁË£¬¾ÍÊÇÓĞĞÂÓÃ»§Á¬½ÓÁË
 void Acceptor::handleRead()
 {
     InetAddress peerAddr;
@@ -63,7 +63,7 @@ void Acceptor::handleRead()
     {
         if (newConnectionCallback_)
         {
-            newConnectionCallback_(connfd, peerAddr); // è½®è¯¢æ‰¾åˆ° subLoopï¼Œå”¤é†’ï¼Œåˆ†å‘å½“å‰çš„æ–°å®¢æˆ·ç«¯çš„ Channel
+            newConnectionCallback_(connfd, peerAddr); // ÂÖÑ¯ÕÒµ½ subLoop£¬»½ĞÑ£¬·Ö·¢µ±Ç°µÄĞÂ¿Í»§¶ËµÄ Channel
         }
         else
         {

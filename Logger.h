@@ -50,24 +50,24 @@
     #define LOG_DEBUG(logmsgFormat, ...)
 #endif
 
-// Е╝ Д╧┴Ф≈╔Е©≈Г╨╖Е┬╚ INFO ERROR FATAL DEBUG
+// ╤╗рЕхуж╬╪╤╠П INFO ERROR FATAL DEBUG
 enum LogLevel
 {
-    INFO, //Ф≥╝И─ Д©║Ф│╞
-    ERROR, //И■≥Х╞╞Д©║Ф│╞
-    FATAL, //coreД©║Ф│╞
-    DEBUG // Х╟┐Х╞∙Д©║Ф│╞
+    INFO, //фум╗пео╒
+    ERROR, //╢МнСпео╒
+    FATAL, //coreпео╒
+    DEBUG // ╣Вйтпео╒
 };
 
-// Х╬⌠Е┤╨Д╦─Д╦╙Ф≈╔Е©≈Г╠╩
+// йДЁЖр╩╦Жхуж╬юЮ
 class Logger : noncopyable
 {
 public:
-    // Х▌╥Е▐√Ф≈╔Е©≈Е■╞Д╦─Г └Е╝·Д╬▀Е╞╧Х╠║
+    // ╩Ях║хуж╬н╗р╩╣дй╣юЩ╤тоС
     static Logger& instance();
-    // Х╝╬Г╫╝Ф≈╔Е©≈Г╨╖Е┬╚
+    // иХжцхуж╬╪╤╠П
     void setLogLevel(int level);
-    // Е├≥Ф≈╔Е©≈
+    // п╢хуж╬
     void log(std::string msg);
 private:
     int logLevel_;

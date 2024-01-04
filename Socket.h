@@ -4,7 +4,7 @@
 
 class InetAddress;
 
-// å°è£… Socket fd
+// ·â×° Socket fd
 class Socket : noncopyable
 {
 public:

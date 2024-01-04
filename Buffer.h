@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <algorithm>
 
-// ç½‘ç»œåº“åº•å±‚çš„ç¼“å†²å™¨ç±»å‹å®šä¹‰
+// ÍøÂç¿âµ×²ãµÄ»º³åÆ÷ÀàĞÍ¶¨Òå
 class Buffer
 {
 public:
@@ -13,7 +15,33 @@ public:
 
     size_t readableBytes() const;
     size_t writableBytes() const;
+
+    size_t prependableBytes() const;
+
+    const char* peek() const; // ·µ»Ø»º³åÇøÖĞ¿É¶ÁÊı¾İµÄÆğÊ¼µØÖ·
+
+    void retrieve(size_t len);
+    void retrieveAll();
+    std::string retrieveAllAsString();
+    std::string retrieveAsString(size_t len);
+    
+    void ensureWritableBytes(size_t len);
+
+    void append(const char *data, size_t len);
+
+    char* beginWrite();
+    const char* beginWrite() const;
+
+    ssize_t readFd(int fd, int *saveErrno);
+    ssize_t writeFd(int fd, int *saveErrno);
 private:
+    char* begin(); // vector µ×²ãÊı×éÊ×ÔªËØµÄµØÖ·£¬Ò²¾ÍÊÇÊı×éµÄÆğÊ¼µØÖ·
+    const char* begin() const;
+
+    void makeSpace(size_t len);
+
+
+
     std::vector<char> buffer_;
     size_t readerIndex_;
     size_t writerIndex_;

@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.5)
 project(mymuduo)
 
-# mymuduo 鏈€缁堢紪璇戞垚 so 鍔ㄦ€佸簱锛岃缃姩鎬佸簱鐨勮矾寰勶紝鏀惧湪鏍圭洰褰曠殑 lib 鏂囦欢澶逛笅闈�
+# mymuduo 朢�终编译成 so 动��库，设置动态库的路径，放在根目录的 lib 文件夹下靄1�7
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-# 璁剧疆璋冭瘯淇℃伅 浠ュ強 鍚姩 C++11 璇█鏍囧噯
+# 设置调试信息 以及 启动 C++11 语言标准
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -fPIC")
 
-# 瀹氫箟鍙備笌缂栬瘧鐨勬簮浠ｇ爜鏂囦欢
+# 定义参与编译的源代码文件
 aux_source_directory(. SRC_LIST)
-# 缂栬瘧鐢熸垚鍔ㄦ€佸簱 mymuduo
+# 编译生成动��库 mymuduo
 add_library(mymuduo SHARED ${SRC_LIST})
