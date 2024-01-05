@@ -1,7 +1,10 @@
+#include <functional>
+#include <strings.h>
+
 #include "TcpServer.h"
 #include "Logger.h"
-
-#include <functional>
+#include "TcpConnection.h"
+#include "InetAddress.h"
 
 static EventLoop *CheckLoopNotNull(EventLoop *loop)
 {
@@ -28,7 +31,15 @@ TcpServer::TcpServer(EventLoop *loop, const InetAddress &listenAddr, const std::
 
 TcpServer::~TcpServer()
 {
+    for (auto &item : connections_)
+    {
+        TcpConnectionPtr conn(item.second); // 这个局部的 shared_ptr 智能指针对象，出右括号，可以自动释放 new 出来的 TcpConnection 对象资源了
+        item.second.reset();
 
+        conn->getLoop()->runInLoop(
+            std::bind(&TcpConnection::connectDestroyed, conn)
+        );
+    }
 }
 
 void TcpServer::setThreadInitCallback(const ThreadInitCallback &cb)
@@ -67,17 +78,65 @@ void TcpServer::start()
     }
 }
 
+// 有一个客户端的连接，acceptor 会执行这个回调操作
 void TcpServer::newConnection(int sockfd, const InetAddress &peerAddr)
 {
+    // 轮询算法，选择一个 subLoop，来管理 channel
+    EventLoop *ioLoop = threadPool_->getNextLoop();
+    char buf[64] = {0};
+    snprintf(buf, sizeof buf, "-%s#%d", ipPort_.c_str(), nextConnId_);
+    ++nextConnId_;
+    std::string connName = name_ + buf;
 
+    LOG_INFO("TcpServer::newConnection [%s] - new connection [%s] from %s \n", name_.c_str(), connName.c_str(), peerAddr.toIpPort().c_str());
+
+    // 通过 sockfd 获取其绑定的本机的 ip 地址和端口信息
+    sockaddr_in local;
+    ::bzero(&local, sizeof local);
+    socklen_t addrlen = sizeof local;
+    if (::getsockname(sockfd, (sockaddr*)&local, &addrlen) < 0)
+    {
+        LOG_ERROR("TcpServer::getLocalAddr");
+    }
+    InetAddress localAddr(local);
+
+    // 根据连接成功的 sockfd，创建 TcpConnection 连接对象
+    TcpConnectionPtr conn(new TcpConnection(
+        ioLoop,
+        connName,
+        sockfd,
+        localAddr,
+        peerAddr
+    ));
+    connections_[connName] = conn;
+    // 下面的回调都是用户设置给 TcpServer => TcpConnection => channel => poller => notify channel 调用回调
+    conn->setConnectionCallback(connectionCallback_);
+    conn->setMessageCallback(messageCallback_);
+    conn->setWriteCompleteCallback(writeCompleteCallback_);
+
+    // 设置了如何关闭连接的回调
+    conn->setCloseCallback(
+        std::bind(&TcpServer::removeConnection, this, std::placeholders::_1)
+    );
+
+    // 直接调用 TcpConnection::connectEstablished
+    ioLoop->runInLoop(std::bind(&TcpConnection::connectEstablished, conn));
 }
 
 void TcpServer::removeConnection(const TcpConnectionPtr &conn)
 {
-
+    loop_->runInLoop(
+        std::bind(&TcpServer::removeConnectionInLoop, this, conn)
+    );
 }
 
 void TcpServer::removeConnectionInLoop(const TcpConnectionPtr &conn)
 {
+    LOG_INFO("TcpServer::removeConnectionInLoop [%s] - connection %s \n", name_.c_str(), conn->name().c_str());
 
+    size_t n = connections_.erase(conn->name());
+    EventLoop *ioLoop = conn->getLoop();
+    ioLoop->queueInLoop(
+        std::bind(&TcpConnection::connectDestroyed, conn)
+    );
 }

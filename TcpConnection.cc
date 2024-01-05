@@ -89,7 +89,13 @@ void TcpConnection::send(const void *message, int len)
 // 关闭连接
 void TcpConnection::shutdown()
 {
-
+    if (state_ == kConnected)
+    {
+        setState(kDisconnecting);
+        loop_->runInLoop(
+            std::bind(&TcpConnection::shutdownInLoop, this)
+        );
+    }
 }
 
 void TcpConnection::setConnectionCallback(const ConnectionCallback& cb)
@@ -121,13 +127,24 @@ void TcpConnection::setCloseCallback(const CloseCallback& cb)
 // 连接建立
 void TcpConnection::connectEstablished()
 {
+    setState(kConnected);
+    channel_->tie(shared_from_this());
+    channel_->enableReading(); // 向 poller 注册 channel 的 epollin 事件
 
+    // 新连接建立，执行回调
+    connectionCallback_(shared_from_this());
 }
 
 // 连接销毁
 void TcpConnection::connectDestroyed()
 {
-    
+    if (state_ == kConnected)
+    {
+        setState(kDisconnected);
+        channel_->disableAll(); // 把 channel 的所有感兴趣的事件，从 poller 中 del 掉
+        connectionCallback_(shared_from_this());
+    }
+    channel_->remove(); // 把 channel 从 poller 中删除掉
 }
 
 void TcpConnection::handleRead(Timestamp receiveTime)
@@ -187,6 +204,7 @@ void TcpConnection::handleWrite()
     }
 }
 
+// poller => channel::closeCallback => TcpConnection::handleClose
 void TcpConnection::handleClose()
 {
     LOG_INFO("TcpConnection::handleClose fd=%d state=%d \n", channel_->fd(), (int)state_);
@@ -195,7 +213,7 @@ void TcpConnection::handleClose()
 
     TcpConnectionPtr connPtr(shared_from_this());
     connectionCallback_(connPtr); // 执行连接关闭的回调
-    closeCallback_(connPtr); // 关闭连接的回调
+    closeCallback_(connPtr); // 关闭连接的回调，执行的是 TcpServer::removeConnection 回调方法
 }
 
 void TcpConnection::handleError()
@@ -299,7 +317,10 @@ void TcpConnection::sendInLoop(const void* data, size_t len)
 
 void TcpConnection::shutdownInLoop()
 {
-
+    if (!channel_->isWriting()) // 说明当前 outputBuffer 中的数据全部发送完成
+    {
+        socket_->shutdownWrite(); // 关闭写端
+    }
 }
 
 void TcpConnection::setState(StateE state)
